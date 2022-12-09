@@ -19,6 +19,14 @@ export default defineConfig(({ mode }) => {
     define: {
       'process.env': env // 将属性转化为全局变量，让代码中可以正常访问
     },
+    css: {
+      preprocessorOptions: {
+        // 导入scss/less/stylus与编译程序
+        // scss: {
+        //   additionalData: `@use "../scss"`
+        // },
+      }
+    },
     plugins: [
       vue(),
       legacy({
@@ -30,13 +38,23 @@ export default defineConfig(({ mode }) => {
       }),
       AutoImport({
         // 自动导入 Element Plus 相关函数，如：ElMessage, ElMessageBox... (带样式)
-        resolvers: [ElementPlusResolver()],
+        resolvers: [
+          ElementPlusResolver({
+            // 自动导入修改主题色需要添加预编译样式
+            // importStyle: 'sass'
+          })
+        ],
         // 配置自动引入的.d.ts文件存放的位置
         dts: resolve(pathSrc, 'auto-imports.d.ts')
       }),
       Components({
         // 自动导入 Element Plus 组件
-        resolvers: [ElementPlusResolver()],
+        resolvers: [
+          ElementPlusResolver({
+            // 自动导入修改主题色需要添加预编译样式
+            // importStyle: 'sass'
+          })
+        ],
         // 配置自动引入的.d.ts文件存放的位置
         dts: resolve(pathSrc, 'components.d.ts')
       })
@@ -45,10 +63,11 @@ export default defineConfig(({ mode }) => {
       alias: [
         { find: '@', replacement: pathSrc },
         { find: 'components', replacement: '@/components' },
-        { find: 'images', replacement: 'src/assets/img/' }
+        { find: 'img', replacement: 'src/assets/img/' }
       ],
       extensions: ['.js', '.ts', '.json', 'tsx']
     },
+    base: './', // 相当于 assetsPublicPath: './
     server: {
       host: '0.0.0.0',
       open: true, // 项目启动时自动打开浏览器
@@ -68,8 +87,23 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'build', // 输出路径
-      sourcemap: false,
-      target: 'es2015' // 默认 "modules"
+      sourcemap: false, // 不打包sourcemap文件
+      target: 'es2015', // 默认 "modules"
+      assetsDir: 'assets', // 静态资源目录
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true
+        },
+        output: {
+          comments: true
+        }
+      }
+    },
+    // 引入第三方配置
+    optimizeDeps: {
+      include: []
     }
   }
 })

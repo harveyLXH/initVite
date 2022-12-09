@@ -16,6 +16,7 @@
     "dayjs": "^1.11.7",
     "element-plus": "^2.2.26",
     "normalize.css": "^8.0.1",
+    "terser": "^5.16.1",
     "vue": "^3.2.41",
     "vue-router": "^4.1.6",
     "vuex": "^4.1.0"
